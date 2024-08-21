@@ -1,17 +1,28 @@
-TODO:
+# available arch
 
-1. *touch* api, look on the raw list of bin packages
-2. think about the most suitable json struct for '2)'
-# coding
-3. make go module and implement json structures
-4. and cli with `compare` mode selection:
-- if pkg in A and pkg not in B -> [pkg, ]
-- if A[pkg].version > B[pkg].version -> [pkg, ]
+|**arch / branch**| p10 | sisyphus |
+|-----------------|-----|----------|
+| aarch64         | +   | +        |
+| armh            | +   |          |
+| i586            | +   | +        |
+| noarch          | +   | +        |
+| ppc64le         | +   | +        |
+| srpm            | +   | +        |
+| x86_64          | +   | +        |
 
-usage:
+# build
 ```
-$ ./cli --arch=<arch> --a=<branch A> --b=<branch B> --compare=<existence|version>
-	arch — system architecture;
-	a, b — target branch;
-	compare — compare mode: existence or version.
+go mod tidy
+go build ./cmd/cli/cli.go
 ```
+
+# usage
+```./cli --arch=<arch> --a=<branch A> --b=<branch B> --compare=<mode>```
+- arch — system architecture;
+- a, b — target branch;
+- compare — compare mode: existence or version.
+
+# examples of usage:
+- `./cli -B sisyphus -A p10 --compare=existence > test1.json`
+- `./cli -A sisyphus -B p10 --compare=existence > test2.json`
+- `./cli -A sisyphus -B p10 --compare=version > test3.json`

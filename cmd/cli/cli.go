@@ -1,6 +1,7 @@
 package main
 
 import (
+    "encoding/json"
     "flag"
     "fmt"
 
@@ -17,24 +18,30 @@ type Args struct {
 func main() {
     var args Args
 	flag.StringVar(&args.Arch, "arch", "x86_64", "system architecture")
-	flag.StringVar(&args.BranchA, "branchA", "p10", "target branch A")
-	flag.StringVar(&args.BranchB, "branchB", "sisyphus", "target branch B")
+	flag.StringVar(&args.BranchA, "A", "p10", "target branch A")
+	flag.StringVar(&args.BranchB, "B", "sisyphus", "target branch B")
 	flag.StringVar(&args.CompareMode, "compare", "existence", "compare mode")
 	flag.Parse()
 
-    pkgsA := basealt.GetPackages(args.Arch, args.BranchA)
-    pkgsB := basealt.GetPackages(args.Arch, args.BranchB)
-    pkgsC := make(basealt.Pkgs)
+    A := basealt.GetPackages(args.Arch, args.BranchA)
+    B := basealt.GetPackages(args.Arch, args.BranchB)
+    C := make(basealt.Pkgs)
 
     switch args.CompareMode {
         case "existence":
-            pkgsC = basealt.CompareExistence(pkgsA, pkgsB)
+            C = basealt.ComparePackagesExistence(A, B)
+        case "version":
+            C = basealt.ComparePackagesVersion(A, B)
         default:
             fmt.Println("Unexpected value for `compare` mode.")
     }
 
-    for k, _ := range pkgsC {
-        fmt.Println(k)
-    }
+    res := basealt.NewComparisonResult(args.Arch, C)
+    resJSON, err := json.MarshalIndent(res, "", "\t")
+	if err != nil {
+		fmt.Errorf("%v", err)
+	}
+
+    fmt.Println(string(resJSON))
 }
 

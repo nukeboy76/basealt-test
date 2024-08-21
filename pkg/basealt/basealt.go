@@ -3,8 +3,12 @@ package basealt
 import (
     "encoding/json"
     "fmt"
+    "maps"
     "net/http"
     "net/url"
+    "slices"
+
+    "github.com/cavaliergopher/rpm"
 )
 
 var (
@@ -24,13 +28,24 @@ type Package struct {
 }
 
 type BranchBinaryPackages struct {
-    Length      uint32      `json:"length"`
     Packages    []Package   `json:"packages"`
 }
 
 type Pkgs map[string]Package
 
-func CompareExistence(a Pkgs, b Pkgs) Pkgs {
+type ComparisonResult struct {
+    Arch        string  `json:"arch"`
+    Packages    []Package  `json:"packages"`
+}
+
+func NewComparisonResult(arch string, pkgs Pkgs) ComparisonResult {
+    return ComparisonResult{
+        Arch: arch,
+        Packages: slices.Collect(maps.Values(pkgs)),
+    }
+}
+
+func ComparePackagesExistence(a, b Pkgs) Pkgs {
     c := make(Pkgs)
     for k, v := range a {
         if _, ok := b[k]; !ok {
@@ -40,7 +55,17 @@ func CompareExistence(a Pkgs, b Pkgs) Pkgs {
     return c
 }
 
-func GetPackages(arch string, branch string) Pkgs {
+func ComparePackagesVersion(a, b Pkgs) Pkgs {
+    c := make(Pkgs)
+    for k, packageA := range a {
+        if packageB, ok := b[k]; (ok && rpm.CompareVersions(packageA.Release, packageB.Release) == 1) {
+            c[k] = packageA
+        }
+    }
+    return c
+}
+
+func GetPackages(arch, branch string) Pkgs {
     branch_url, err := url.JoinPath(baseUrl, endpoint, branch)
     if err != nil {
         panic(fmt.Sprintf("\033[31m JoinPath error: %#v \033[0m", err))
