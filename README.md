@@ -10,8 +10,8 @@ TODO:
 
 usage:
 ```
-$ ./cli --arch=<arch> --a=<branch A> --b=<branch B> --compare=<existance|version>
+$ ./cli --arch=<arch> --a=<branch A> --b=<branch B> --compare=<existence|version>
 	arch — system architecture;
 	a, b — target branch;
-	compare — compare mode: existance or version;
+	compare — compare mode: existence or version.
 ```

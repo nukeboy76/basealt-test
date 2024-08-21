@@ -30,7 +30,17 @@ type BranchBinaryPackages struct {
 
 type Pkgs map[string]Package
 
-func GetBranchBinaryPackages(arch string, branch string) Pkgs {
+func CompareExistence(a Pkgs, b Pkgs) Pkgs {
+    c := make(Pkgs)
+    for k, v := range a {
+        if _, ok := b[k]; !ok {
+            c[k] = v
+        }
+    }
+    return c
+}
+
+func GetPackages(arch string, branch string) Pkgs {
     branch_url, err := url.JoinPath(baseUrl, endpoint, branch)
     if err != nil {
         panic(fmt.Sprintf("\033[31m JoinPath error: %#v \033[0m", err))
