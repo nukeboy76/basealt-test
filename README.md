@@ -17,12 +17,12 @@ go build ./cmd/cli/cli.go
 ```
 
 # usage
-```./cli --arch=<arch> --a=<branch A> --b=<branch B> --compare=<mode>```
+```./cli --arch=<arch> --A=<branch A> --B=<branch B> --compare=<mode>```
 - arch — system architecture;
-- a, b — target branch;
+- A, B — target branches;
 - compare — compare mode: existence or version.
 
 # examples of usage:
-- `./cli -B sisyphus -A p10 --compare=existence > test1.json`
-- `./cli -A sisyphus -B p10 --compare=existence > test2.json`
+- `./cli -arch aarch64 -B sisyphus -A p10 --compare=existence > test1.json`
+- `./cli -arch i586 -A sisyphus -B p10 --compare=existence > test2.json`
 - `./cli -A sisyphus -B p10 --compare=version > test3.json`
